@@ -29,7 +29,13 @@ export class UserService {
       where: {
         id: userId,
       },
-      relations: ['address'],
+      relations: {
+        address: {
+          city: {
+            state: true
+          }
+        },
+      },
     })
   }
 
