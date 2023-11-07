@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadGatewayException, Injectable, NotFoundException } from '@nestjs/common';
 import { createUserDTO } from './dtos/createUser.dto';
 import { UserEntity } from './entities/user.entity';
 
@@ -14,6 +14,11 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
   async createUser(createUserDTO: createUserDTO): Promise<UserEntity> {
+    const user = await this.findUserByEmail(createUserDTO.email).catch(() => undefined)
+
+    if (user) {
+      throw new BadGatewayException('Este email já está cadastrado no sistema. Tente cadastrar outro email.')
+    }
     const crypt = 10;
     const passwordHashed = await hash(createUserDTO.password, crypt);
 
