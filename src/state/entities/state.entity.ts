@@ -16,5 +16,5 @@ export class StateEntity {
   updateAt: Date;
 
   @OneToMany(() => CityEntity, (city) => city.state)
-  cities: CityEntity;
+  cities?: CityEntity;
 }
