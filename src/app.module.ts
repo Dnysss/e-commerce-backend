@@ -10,6 +10,8 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './guards/roles.guard';
+import { CategoryModule } from './category/category.module';
+import { ProductModule } from './product/product.module';
 
 
 @Module({
@@ -36,6 +38,8 @@ import { RolesGuard } from './guards/roles.guard';
     CacheModule,
     AuthModule,
     JwtModule,
+    CategoryModule,
+    ProductModule,
   ],
   controllers: [],
   providers: [{
