@@ -9,7 +9,7 @@ export class ProductEntity {
     @Column({ name: 'name', nullable: false })
     name: string;
 
-    @Column({ name: 'catedory_id', nullable: false})
+    @Column({ name: 'category_id', nullable: false})
     categoryId: number;
 
     @Column({ name: 'price', nullable: false })
