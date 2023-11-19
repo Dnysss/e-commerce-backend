@@ -1,4 +1,8 @@
-import { BadGatewayException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadGatewayException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { createUserDTO } from './dtos/createUser.dto';
 import { UserEntity } from './entities/user.entity';
 
@@ -6,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { hash } from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UserType } from './enum/user-type.enum';
 
 @Injectable()
 export class UserService {
@@ -14,17 +19,21 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
   async createUser(createUserDTO: createUserDTO): Promise<UserEntity> {
-    const user = await this.findUserByEmail(createUserDTO.email).catch(() => undefined)
+    const user = await this.findUserByEmail(createUserDTO.email).catch(
+      () => undefined,
+    );
 
     if (user) {
-      throw new BadGatewayException('Este email já está cadastrado no sistema. Tente cadastrar outro email.')
+      throw new BadGatewayException(
+        'Este email já está cadastrado no sistema. Tente cadastrar outro email.',
+      );
     }
     const crypt = 10;
     const passwordHashed = await hash(createUserDTO.password, crypt);
 
     return this.userRepository.save({
       ...createUserDTO,
-      typeUser: 1,
+      typeUser: UserType.User,
       password: passwordHashed,
     });
   }
@@ -37,11 +46,11 @@ export class UserService {
       relations: {
         address: {
           city: {
-            state: true
-          }
+            state: true,
+          },
         },
       },
-    })
+    });
   }
 
   async getAllUsers(): Promise<UserEntity[]> {
@@ -52,24 +61,24 @@ export class UserService {
     const user = await this.userRepository.findOne({
       where: {
         id: userId,
-      }
-    })
+      },
+    });
 
     if (!user) {
-      throw new NotFoundException(`UserId: ${userId} not found.`)
+      throw new NotFoundException(`UserId: ${userId} not found.`);
     }
 
     return user;
   }
 
   async findUserByEmail(email: string): Promise<UserEntity> {
-    const user =  await this.userRepository.findOne({
+    const user = await this.userRepository.findOne({
       where: {
         email,
-      }
+      },
     });
-    if(!user) {
-      throw new NotFoundException(`Email: ${email} Not Found`)
+    if (!user) {
+      throw new NotFoundException(`Email: ${email} Not Found`);
     }
 
     return user;
