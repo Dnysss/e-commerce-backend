@@ -5,6 +5,7 @@ import { InsertCartDTO } from './dtos/insert-cart.dto';
 import { CartEntity } from './entities/cart.entity';
 import { CartService } from './cart.service';
 import { UserId } from 'src/decorators/user-id.decorator';
+import { ReturnCartDTO } from './dtos/return-cart.dto';
 
 
 @Roles(UserType.User, UserType.Admin)
@@ -15,7 +16,7 @@ export class CartController {
     ) {}
     @UsePipes(ValidationPipe)
     @Post()
-    async insertProductInCart(@Body() insertCart: InsertCartDTO, @UserId() userId: number): Promise<CartEntity> {
-        return this.cartService.insertProductInCart(insertCart, userId)
+    async insertProductInCart(@Body() insertCart: InsertCartDTO, @UserId() userId: number): Promise<ReturnCartDTO> {
+        return new ReturnCartDTO(await this.cartService.insertProductInCart(insertCart, userId)) 
     }
 }
