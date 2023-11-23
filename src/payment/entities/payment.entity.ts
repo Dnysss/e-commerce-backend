@@ -11,7 +11,7 @@ export abstract class PaymentEntity {
     @Column({ name: 'status_id', nullable: false })
     statusId: number;
 
-    @Column({ name: 'pice', nullable: false })
+    @Column({ name: 'price', nullable: false })
     price: number;
 
     @Column({ name: 'discount', nullable: false })
@@ -35,4 +35,11 @@ export abstract class PaymentEntity {
     @ManyToOne(() => PaymentStatusEntity, (payments) => payments)
     @JoinColumn({ name: 'status_id', referencedColumnName: 'id' })
     paymentStatus?: PaymentStatusEntity;
+
+    constructor(statusId: number, price: number, discount: number, finalPrice: number) {
+        this.statusId = statusId;
+        this.price = price;
+        this.discount = discount;
+        this.finalPrice = finalPrice;
+    }
 }
