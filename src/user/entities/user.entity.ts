@@ -33,10 +33,6 @@ export class UserEntity {
   @UpdateDateColumn({ name: 'updated_at' })
   updateAt: Date;
 
-  @ManyToOne(() => UserEntity, (user) => user.orders)
-  @JoinColumn({ name: 'user', referencedColumnName: 'id' })
-  user?: UserEntity;
-
   @OneToMany(() => AddressEntity, (address) => address.user)
   address?: AddressEntity[];
 
