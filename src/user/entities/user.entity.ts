@@ -1,5 +1,8 @@
+import { OrderEntity } from 'src/order/entities/order.entity';
 import { AddressEntity } from '../../address/entities/address.entity';
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { PaymentEntity } from 'src/payment/entities/payment.entity';
+import { OrderProductEntity } from 'src/order-product/entities/order-product.entity';
 
 @Entity({ name: 'user' })
 export class UserEntity {
@@ -30,6 +33,13 @@ export class UserEntity {
   @UpdateDateColumn({ name: 'updated_at' })
   updateAt: Date;
 
-  @OneToMany(() => AddressEntity, address => address.user)
+  @ManyToOne(() => UserEntity, (user) => user.orders)
+  @JoinColumn({ name: 'user', referencedColumnName: 'id' })
+  user?: UserEntity;
+
+  @OneToMany(() => AddressEntity, (address) => address.user)
   address?: AddressEntity[];
+
+  @OneToMany(() => OrderEntity, (order) => order.address)
+  orders?: OrderEntity[];
 }

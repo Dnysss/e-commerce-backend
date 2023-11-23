@@ -1,4 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { OrderEntity } from "src/order/entities/order.entity";
+import { ProductEntity } from "src/product/entities/product.entity";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'order_product' })
 export class OrderProductEntity {
@@ -22,4 +24,12 @@ export class OrderProductEntity {
 
     @CreateDateColumn({ name: 'updated_at' })
     updateAt: Date;
+
+    @ManyToMany(() => OrderEntity, (order) => order.orderProduct)
+    @JoinColumn({ name: 'order_id', referencedColumnName: 'id' })
+    order?: OrderEntity;
+
+    @ManyToMany(() => ProductEntity, (product) => product.ordersProduct)
+    @JoinColumn({ name: 'product_id', referencedColumnName: 'id' })
+    product?: ProductEntity;
 }
