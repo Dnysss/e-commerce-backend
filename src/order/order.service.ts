@@ -1,22 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderEntity } from './entities/order.entity';
 import { Repository } from 'typeorm';
 import { CreateOrderDTO } from './dtos/create-order.dto';
-import { PaymentService } from 'src/payment/payment.service';
-import { PaymentEntity } from 'src/payment/entities/payment.entity';
-import { CartService } from 'src/cart/cart.service';
+import { PaymentService } from '../payment/payment.service';
+import { PaymentEntity } from '../payment/entities/payment.entity';
+import { CartService } from '../cart/cart.service';
 import { OrderProductService } from 'src/order-product/order-product.service';
 import { ProductService } from 'src/product/product.service';
 import { OrderProductEntity } from 'src/order-product/entities/order-product.entity';
-import { CartEntity } from 'src/cart/entities/cart.entity';
-import { ProductEntity } from 'src/product/entities/product.entity';
+import { CartEntity } from '../cart/entities/cart.entity';
+import { ProductEntity } from '../product/entities/product.entity';
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectRepository(OrderEntity)
-    private readonly oderRepository: Repository<OrderEntity>,
+    private readonly orderRepository: Repository<OrderEntity>,
     private readonly paymentService: PaymentService,
     private readonly cartService: CartService,
     private readonly orderProductService: OrderProductService,
@@ -28,7 +28,7 @@ export class OrderService {
     userId: number,
     payment: PaymentEntity,
   ): Promise<OrderEntity> {
-    return this.oderRepository.save({
+    return this.orderRepository.save({
       addressId: createOrderDTO.addressId,
       date: new Date(),
       paymentId: payment.id,
@@ -41,7 +41,7 @@ export class OrderService {
     orderId: number,
     products: ProductEntity[],
   ): Promise<OrderProductEntity[]> {
-    return await Promise.all(
+    return Promise.all(
       cart.cartProduct?.map((cartProduct) =>
         this.orderProductService.createOrderProduct(
           cartProduct.productId,
@@ -69,10 +69,33 @@ export class OrderService {
 
     const order = await this.saveOrder(createOrderDTO, userId, payment);
 
-    await this.cartService.clearCart(userId);
-
     await this.createOrderProductUsingCart(cart, order.id, products);
 
+    await this.cartService.clearCart(userId);
+
     return order;
+  }
+
+  async findOrdersByUserId(userId: number): Promise<OrderEntity[]> {
+    const orders = await this.orderRepository.find({
+      where: {
+        userId
+      },
+      relations: {
+        address: true,
+        orderProduct: {
+          product: true,
+        },
+        payment: {
+          paymentStatus: true
+        },
+      }
+    });
+
+    if (!orders || orders.length === 0) {
+      throw new NotFoundException('Orders não encontrado');
+    }
+
+    return orders;
   }
 }

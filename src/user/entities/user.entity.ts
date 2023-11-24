@@ -1,6 +1,6 @@
-import { OrderEntity } from 'src/order/entities/order.entity';
+import { OrderEntity } from '../../order/entities/order.entity';
 import { AddressEntity } from '../../address/entities/address.entity';
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { PaymentEntity } from 'src/payment/entities/payment.entity';
 import { OrderProductEntity } from 'src/order-product/entities/order-product.entity';
 
