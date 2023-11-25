@@ -40,5 +40,5 @@ export class OrderEntity {
     payment?: PaymentEntity;
 
     @OneToMany(() => OrderProductEntity, (orderProduct) => orderProduct.order)
-    orderProduct?: OrderProductEntity;
+    ordersProduct?: OrderProductEntity[];
 }

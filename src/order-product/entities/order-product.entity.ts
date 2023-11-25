@@ -25,7 +25,7 @@ export class OrderProductEntity {
     @CreateDateColumn({ name: 'updated_at' })
     updateAt: Date;
 
-    @ManyToOne(() => OrderEntity, (order) => order.orderProduct)
+    @ManyToOne(() => OrderEntity, (order) => order.ordersProduct)
     @JoinColumn({ name: 'order_id', referencedColumnName: 'id' })
     order?: OrderEntity;
 

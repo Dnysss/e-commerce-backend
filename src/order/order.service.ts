@@ -76,19 +76,21 @@ export class OrderService {
     return order;
   }
 
-  async findOrdersByUserId(userId: number): Promise<OrderEntity[]> {
+  async findOrdersByUserId(userId?: number, orderId?: number): Promise<OrderEntity[]> {
     const orders = await this.orderRepository.find({
       where: {
-        userId
+        userId,
+        id: orderId
       },
       relations: {
         address: true,
-        orderProduct: {
+        ordersProduct: {
           product: true,
         },
         payment: {
           paymentStatus: true
         },
+        user: !!orderId,
       }
     });
 
@@ -97,7 +99,7 @@ export class OrderService {
     }
 
     return orders;
-  }
+  };
 
   async findAllOrders(): Promise<OrderEntity[]> {
     const orders = await this.orderRepository.find({
