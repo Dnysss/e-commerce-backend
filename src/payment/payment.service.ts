@@ -2,13 +2,13 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaymentEntity } from './entities/payment.entity';
 import { Repository } from 'typeorm';
-import { CreateOrderDTO } from 'src/order/dtos/create-order.dto';
+import { CreateOrderDTO } from '../order/dtos/create-order.dto';
 import { PaymentCreditCardEntity } from './entities/payment-credit-card.entity';
-import { PaymentType } from 'src/payment-status/enum/payment-type.enum';
+import { PaymentType } from '../payment-status/enum/payment-type.enum';
 import { PaymentPixEntity } from './entities/payment-pix.entity';
 import { ProductEntity } from '../product/entities/product.entity';
 import { CartEntity } from '../cart/entities/cart.entity';
-import { CartProductEntity } from 'src/cart-product/entities/cart-product.entity';
+import { CartProductEntity } from '../cart-product/entities/cart-product.entity';
 
 @Injectable()
 export class PaymentService {
@@ -22,14 +22,16 @@ export class PaymentService {
       return 0;
     }
 
-    return cart.cartProduct.map((cartProduct: CartProductEntity) => {
-      const product = products.find((product) => product.id === cartProduct.productId);
+    return Number(
+      cart.cartProduct.map((cartProduct: CartProductEntity) => {
+        const product = products.find((product) => product.id === cartProduct.productId);
 
-      if (product) {
-          return cartProduct.amount * product.price;
-      }
-      return 0;
-    }).reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+        if (product) {
+            return cartProduct.amount * product.price;
+        }
+        return 0;
+      }).reduce((accumulator, currentValue) => accumulator + currentValue, 0).toFixed(2),
+    )
   }
 
   async createPayment(
