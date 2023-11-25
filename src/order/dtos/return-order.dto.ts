@@ -15,6 +15,7 @@ export class ReturnOrderDTO {
   address?: ReturnAddressDto;
   payment?: ReturnPaymentDTO;
   ordersProduct?: ReturnOrderProductDTO[];
+  amountProducts?: number;
 
   constructor(order: OrderEntity) {
     this.id = order.id;
@@ -34,5 +35,6 @@ export class ReturnOrderDTO {
           (orderProduct) => new ReturnOrderProductDTO(orderProduct),
         )
       : undefined;
+    this.amountProducts = order.amountProducts;
   }
 }
