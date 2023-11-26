@@ -19,8 +19,10 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  
-  async createUser(createUserDTO: createUserDTO): Promise<UserEntity> {
+  async createUser(
+    createUserDTO: createUserDTO,
+    userType?: number,
+  ): Promise<UserEntity> {
     const user = await this.findUserByEmail(createUserDTO.email).catch(
       () => undefined,
     );
@@ -30,11 +32,11 @@ export class UserService {
         'Este email já está cadastrado no sistema. Tente cadastrar outro email.',
       );
     }
-    const passwordHashed = await createPasswordHashed(createUserDTO.password)
+    const passwordHashed = await createPasswordHashed(createUserDTO.password);
 
     return this.userRepository.save({
       ...createUserDTO,
-      typeUser: UserType.User,
+      typeUser: userType ? userType : UserType.User,
       password: passwordHashed,
     });
   }
@@ -85,22 +87,28 @@ export class UserService {
     return user;
   }
 
-  async updatePasswordUser(updatePasswordDTO: UpdatePasswordDTO, userId: number): Promise<UserEntity> {
+  async updatePasswordUser(
+    updatePasswordDTO: UpdatePasswordDTO,
+    userId: number,
+  ): Promise<UserEntity> {
     const user = await this.findUserById(userId);
 
-    const passwordHashed = await createPasswordHashed (
-      updatePasswordDTO.newPassword
+    const passwordHashed = await createPasswordHashed(
+      updatePasswordDTO.newPassword,
     );
 
-    const isMatch = await vaildatePassword(updatePasswordDTO.lastPassword, user.password || '');
+    const isMatch = await vaildatePassword(
+      updatePasswordDTO.lastPassword,
+      user.password || '',
+    );
 
     if (!isMatch) {
-      throw new BadRequestException('Senha inválida')
+      throw new BadRequestException('Senha inválida');
     }
 
     return this.userRepository.save({
       ...user,
-      password: passwordHashed
-    })
+      password: passwordHashed,
+    });
   }
 }
