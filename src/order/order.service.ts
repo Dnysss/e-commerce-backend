@@ -6,9 +6,9 @@ import { CreateOrderDTO } from './dtos/create-order.dto';
 import { PaymentService } from '../payment/payment.service';
 import { PaymentEntity } from '../payment/entities/payment.entity';
 import { CartService } from '../cart/cart.service';
-import { OrderProductService } from 'src/order-product/order-product.service';
-import { ProductService } from 'src/product/product.service';
-import { OrderProductEntity } from 'src/order-product/entities/order-product.entity';
+import { OrderProductService } from '../order-product/order-product.service';
+import { ProductService } from '../product/product.service';
+import { OrderProductEntity } from '../order-product/entities/order-product.entity';
 import { CartEntity } from '../cart/entities/cart.entity';
 import { ProductEntity } from '../product/entities/product.entity';
 
@@ -89,7 +89,11 @@ export class OrderService {
         id: orderId,
       },
       relations: {
-        address: true,
+        address: {
+          city: {
+            state: true,
+          }
+        },
         ordersProduct: {
           product: true,
         },
