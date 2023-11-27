@@ -6,6 +6,7 @@ import { CreateCategory } from './dtos/create-category.dto';
 import { ProductService } from '../product/product.service';
 import { ReturnCategory } from './dtos/return-category.dto';
 import { CountProduct } from '../product/dtos/count-product.dto';
+import { UpdateCategory } from './dtos/update-category.dto';
 
 @Injectable()
 export class CategoryService {
@@ -86,5 +87,14 @@ export class CategoryService {
             throw new BadRequestException('Categoria com produtos')
         }
         return this.categoryRepository.delete({ id: categoryId })
+    }
+
+    async editCategory(categoryId: number, updateCategory: UpdateCategory ): Promise<CategoryEntity> {
+        const category = await this.findCategoryById(categoryId);
+
+        return this.categoryRepository.save({
+            ...category,
+            ...updateCategory,
+        })
     }
 }
