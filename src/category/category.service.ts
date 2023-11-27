@@ -1,9 +1,9 @@
 import { BadRequestException, Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import { CategoryEntity } from './entities/category.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { CreateCategory } from './dtos/create-category.dto';
-import { ProductService } from 'src/product/product.service';
+import { ProductService } from '../product/product.service';
 import { ReturnCategory } from './dtos/return-category.dto';
 import { CountProduct } from '../product/dtos/count-product.dto';
 
@@ -37,11 +37,15 @@ export class CategoryService {
         return categories.map((category) => new ReturnCategory(category, this.findAmountCategoryInProducts(category, count)));
     }
 
-    async findCategoryById(categoryId: number): Promise<CategoryEntity> {
+    async findCategoryById(categoryId: number, isRelations?: boolean): Promise<CategoryEntity> {
+        const relations = isRelations ? {
+            products: true,
+        } : undefined
+
         const category = await this.categoryRepository.findOne({
             where: {
                 id: categoryId
-            }
+            }, relations
         })
 
         if (!category) {
@@ -73,5 +77,14 @@ export class CategoryService {
         }
 
         return this.categoryRepository.save(createCategory);
+    }
+
+    async deleteCategory(categoryId: number): Promise<DeleteResult> {
+        const category = await this.findCategoryById(categoryId, true);
+        
+        if (category.products?.length > 0) {
+            throw new BadRequestException('Categoria com produtos')
+        }
+        return this.categoryRepository.delete({ id: categoryId })
     }
 }
