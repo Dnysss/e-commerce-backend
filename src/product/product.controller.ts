@@ -18,6 +18,7 @@ import { ProductEntity } from './entities/product.entity';
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { DeleteResult } from 'typeorm';
 import { UpdateProductDTO } from './dtos/update-product.dto';
+import { PaginationDTO } from 'src/dtos/pagination.dto';
 
 @Roles(UserType.Admin, UserType.Root, UserType.User)
 @Controller('product')
@@ -34,14 +35,20 @@ export class ProductController {
 
   @Roles(UserType.Admin, UserType.Root, UserType.User)
   @Get('/page')
-  async findAllPage(@Query('search') search: string): Promise<ReturnProduct[]> {
-    return (await this.productService.findAllPage(search)).map((product) => new ReturnProduct(product))
+  async findAllPage(
+    @Query('search') search?: string,
+    @Query('size') size?: number,
+    @Query('page') page?: number,
+  ): Promise<PaginationDTO<ReturnProduct[]>> {
+    return this.productService.findAllPage(search, size, page)
   }
 
   @Roles(UserType.Admin, UserType.Root, UserType.User)
   @Get('/:productId')
   async findProductById(@Param('productId') productId): Promise<ReturnProduct> {
-    return new ReturnProduct(await this.productService.findProductById(productId, true));
+    return new ReturnProduct(
+      await this.productService.findProductById(productId, true),
+    );
   }
 
   @Roles(UserType.Admin, UserType.Root)
