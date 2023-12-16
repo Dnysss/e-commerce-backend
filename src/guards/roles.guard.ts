@@ -5,6 +5,7 @@ import { LoginPayload } from '../auth/dtos/loginPayload.dto';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import { UserType } from '../user/enum/user-type.enum';
 
+//função para verificar se um usuário possui "roles" necessárias para acessar determinado recurso ou rota.
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(
@@ -24,6 +25,7 @@ export class RolesGuard implements CanActivate {
 
     const { authorization } = context.switchToHttp().getRequest().headers;
 
+//verificar a validade do token e obter os dados do payload
     const loginPayload: LoginPayload | undefined = await this.jwtService
       .verifyAsync(authorization, {
         secret: process.env.JWT_SECRET,

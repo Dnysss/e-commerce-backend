@@ -8,7 +8,7 @@ import { ReturnGroupOrderDTO } from './dtos/return-group-order.dto';
 export class OrderProductService {
   constructor(
     @InjectRepository(OrderProductEntity)
-    private readonly oderProductRepository: Repository<OrderProductEntity>,
+    private readonly orderProductRepository: Repository<OrderProductEntity>,
   ) {}
 
   async createOrderProduct(
@@ -17,7 +17,7 @@ export class OrderProductService {
     price: number,
     amount: number,
   ): Promise<OrderProductEntity> {
-    return this.oderProductRepository.save({
+    return this.orderProductRepository.save({
       amount,
       orderId,
       price,
@@ -26,7 +26,7 @@ export class OrderProductService {
   }
 
   async findAmountProductsByOrderId(orderId: number[]): Promise<ReturnGroupOrderDTO[]> {
-    return this.oderProductRepository
+    return this.orderProductRepository
       .createQueryBuilder('order_product')
       .select('order_product.order_id, COUNT(*) as total')
       .where('order_product.order_id IN (:...ids)', { ids: orderId })

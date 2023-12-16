@@ -34,7 +34,7 @@ export class CreateTableOrder1700694114647 implements MigrationInterface {
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         queryRunner.query(`
-        DROP TABLE public.order;
+            DROP TABLE public.order;
         `)
     }
 
