@@ -12,6 +12,8 @@ import { OrderProductEntity } from '../order-product/entities/order-product.enti
 import { CartEntity } from '../cart/entities/cart.entity';
 import { ProductEntity } from '../product/entities/product.entity';
 
+import * as fs from 'fs';
+import * as PDFDocument from 'pdfkit';
 @Injectable()
 export class OrderService {
   constructor(
@@ -122,21 +124,43 @@ export class OrderService {
       throw new NotFoundException('Orders não encontrado');
     }
 
-    const ordersProduct =
-      await this.orderProductService.findAmountProductsByOrderId(
-        orders.map((order) => order.id),
-      );
+    const ordersProduct = await this.orderProductService.findAmountProductsByOrderId(
+      orders.map((order) => order.id),
+    );
 
-    return orders.map((order) => {
+    const ordersWithAmountProducts = orders.map((order) => {
       const orderProduct = ordersProduct.find((currentOrder) => currentOrder.order_id === order.id);
 
       if (orderProduct) {
         return {
           ...order,
-          amountProducts: Number(orderProduct.total)
+          amountProducts: Number(orderProduct.total),
         };
       }
       return order;
     });
+
+    // Gere o PDF a partir dos dados
+    this.generatePDF(ordersWithAmountProducts);
+
+    return ordersWithAmountProducts;
+  }
+
+  private generatePDF(orders: OrderEntity[]): void {
+    const doc = new PDFDocument();
+    const filePath = 'relatorio.pdf';
+
+    // Crie o conteúdo do PDF com base nos dados da ordem
+    orders.forEach((order) => {
+      doc.text(`Order ID: ${order.id}`, 50, 50);
+      doc.text(`User: ${order.user.name}`, 50, 70);
+      doc.text(`Amount of Products: ${order.amountProducts}`, 50, 90);
+      doc.text('------------------------', 50, 110);
+    });
+
+    // Salve o PDF em um arquivo
+    const stream = fs.createWriteStream(filePath);
+    doc.pipe(stream);
+    doc.end();
   }
 }
