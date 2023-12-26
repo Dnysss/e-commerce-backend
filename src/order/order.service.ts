@@ -16,6 +16,7 @@ import * as fs from 'fs';
 import * as PDFDocument from 'pdfkit';
 @Injectable()
 export class OrderService {
+  // Injeção de dependência dos serviços necessários e do repositório do TypeORM
   constructor(
     @InjectRepository(OrderEntity)
     private readonly orderRepository: Repository<OrderEntity>,
@@ -24,7 +25,7 @@ export class OrderService {
     private readonly orderProductService: OrderProductService,
     private readonly productService: ProductService,
   ) {}
-
+// Salvar pedido no banco de dados
   async saveOrder(
     createOrderDTO: CreateOrderDTO,
     userId: number,
@@ -37,7 +38,7 @@ export class OrderService {
       userId,
     });
   }
-
+// Criar entradas de produto para um pedido com base no carrinho do usuário
   async createOrderProductUsingCart(
     cart: CartEntity,
     orderId: number,
@@ -55,7 +56,7 @@ export class OrderService {
       ),
     );
   }
-
+// Criar uma nova ordem, processar o pagamento e criar as entradas de produto associadas
   async createOrder(
     createOrderDTO: CreateOrderDTO,
     userId: number,
@@ -80,7 +81,7 @@ export class OrderService {
 
     return order;
   }
-
+// Encontrar pedidos por ID de usuário ou ID de pedido
   async findOrdersByUserId(
     userId?: number,
     orderId?: number,
@@ -113,10 +114,11 @@ export class OrderService {
     return orders;
   }
 
+  // Encontrar todas as ordens e gerar um relatório em PDF
   async findAllOrders(): Promise<OrderEntity[]> {
     const orders = await this.orderRepository.find({
       relations: {
-        user: true,
+        user: true, // Carrega informações detalhadas sobre o usuário associado a cada ordem
       },
     });
 
@@ -147,8 +149,8 @@ export class OrderService {
   }
 
   private generatePDF(orders: OrderEntity[]): void {
-    const doc = new PDFDocument();
-    const filePath = 'relatorio.pdf';
+    const doc = new PDFDocument(); // Cria um novo documento PDF usando a biblioteca pdfkit
+    const filePath = 'relatorio.pdf'; // Define o caminho do arquivo PDF gerado
 
     // Crie o conteúdo do PDF com base nos dados da ordem
     orders.forEach((order) => {

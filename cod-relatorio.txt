@@ -1,0 +1,31 @@
+---------------produtos mais vendidos-------------- 
+SELECT
+  op.product_id,
+  p.name AS product_name,
+  SUM(op.amount) AS total_sold
+FROM
+  order_product op
+JOIN
+  product p ON op.product_id = p.id
+GROUP BY
+  op.product_id, p.name
+ORDER BY
+  total_sold DESC
+LIMIT 10;
+
+---------------produtos mais vendidos-------------- 
+
+SELECT
+  op.product_id,
+  p.name AS product_name,
+  SUM(op.amount) AS total_sold
+FROM
+  order_product op
+JOIN
+  product p ON op.product_id = p.id
+GROUP BY
+  op.product_id, p.name
+ORDER BY
+  total_sold ASC
+LIMIT 10;
+

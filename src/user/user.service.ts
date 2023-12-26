@@ -14,11 +14,13 @@ import { createPasswordHashed, vaildatePassword } from '../utils/password';
 
 @Injectable()
 export class UserService {
+  // Injeção de dependência do repositório do TypeORM
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
   ) {}
-
+  
+  // Método para criar um novo usuário
   async createUser(
     createUserDTO: createUserDTO,
     userType?: number,
@@ -32,6 +34,7 @@ export class UserService {
         'Este email já está cadastrado no sistema. Tente cadastrar outro email.',
       );
     }
+    // Criar hash da senha e salvar o novo usuário no banco de dados
     const passwordHashed = await createPasswordHashed(createUserDTO.password);
 
     return this.userRepository.save({
@@ -40,7 +43,7 @@ export class UserService {
       password: passwordHashed,
     });
   }
-
+  // Método para obter um usuário com informações detalhadas usando relações
   async getUserByUsingRelations(userId: number): Promise<UserEntity> {
     return this.userRepository.findOne({
       where: {
@@ -55,7 +58,7 @@ export class UserService {
       },
     });
   }
-
+// Método para obter todos os usuários
   async getAllUsers(): Promise<UserEntity[]> {
     return this.userRepository.find();
   }
@@ -86,26 +89,27 @@ export class UserService {
 
     return user;
   }
-
+// Método para atualizar a senha do usuário
   async updatePasswordUser(
     updatePasswordDTO: UpdatePasswordDTO,
     userId: number,
   ): Promise<UserEntity> {
+    // Encontrar o usuário pelo ID
     const user = await this.findUserById(userId);
-
+// Criar hash da nova senha
     const passwordHashed = await createPasswordHashed(
       updatePasswordDTO.newPassword,
     );
-
+// Validar a senha antiga
     const isMatch = await vaildatePassword(
       updatePasswordDTO.lastPassword,
       user.password || '',
     );
-
+// Se a senha antiga não for válida, lançar uma exceção
     if (!isMatch) {
       throw new BadRequestException('Senha inválida');
     }
-
+// Atualizar a senha do usuário no banco de dados
     return this.userRepository.save({
       ...user,
       password: passwordHashed,

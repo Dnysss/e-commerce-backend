@@ -10,13 +10,14 @@ export class OrderProductService {
     @InjectRepository(OrderProductEntity)
     private readonly orderProductRepository: Repository<OrderProductEntity>,
   ) {}
-
+// Método para criar uma nova entrada de produto para um pedido
   async createOrderProduct(
     productId: number,
     orderId: number,
     price: number,
     amount: number,
   ): Promise<OrderProductEntity> {
+    // Salva a nova entrada de produto no banco de dados
     return this.orderProductRepository.save({
       amount,
       orderId,
@@ -24,8 +25,9 @@ export class OrderProductService {
       productId,
     });
   }
-
+// Método para encontrar a quantidade de produtos em cada pedido
   async findAmountProductsByOrderId(orderId: number[]): Promise<ReturnGroupOrderDTO[]> {
+    // Utiliza uma consulta do TypeORM para contar a quantidade de produtos em cada pedido
     return this.orderProductRepository
       .createQueryBuilder('order_product')
       .select('order_product.order_id, COUNT(*) as total')
